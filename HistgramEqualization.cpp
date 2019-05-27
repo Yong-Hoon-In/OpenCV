@@ -3,7 +3,6 @@
 using namespace cv;
 using namespace std;
 #define L 256
-void drawHistogram(Mat &image, Mat hist);
 void histogram(const char* w_name, Mat img);
 int main()
 {
