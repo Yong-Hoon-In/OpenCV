@@ -21,7 +21,7 @@ int main()
 		cout<<"Cascade 파일 열기 실패"<<endl;
 		return -1;
 	}
-#pragma region 얼굴 검출
+#pragma region faceDetection
 	Mat gray;
 	cvtColor(img, gray, COLOR_RGB2GRAY);//변환
 	vector<Rect> face_pos;
@@ -33,7 +33,7 @@ int main()
 	}
 #pragma endregion
 
-#pragma region 눈 검출
+#pragma region eyeDetection
 	for (int i = 0; i < (int)face_pos.size(); i++) {
 		vector<Rect> eye_pos;
 		Mat roi = gray(face_pos[i]);
