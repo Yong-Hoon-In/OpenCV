@@ -1,0 +1,127 @@
+#include "opencv\cv.h"
+
+#include "opencv\highgui.h"
+
+
+
+void main()
+
+{
+
+
+
+	IplImage* src_img = cvLoadImage("lena.jpg", 0);
+
+	IplImage* edge_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+
+	
+
+	int height, width;
+
+	uchar *data, *data1, temp[225][225];
+
+
+
+	int i, j, x, row, col;
+
+	double Gx, Gy, Gradient;
+
+	double threshold = 128;
+
+
+
+	height = src_img->height;
+
+	width = src_img->width;
+
+	data = (uchar*)src_img->imageData;
+
+
+
+	cvNamedWindow("origin", CV_WINDOW_AUTOSIZE);
+
+	cvNamedWindow("edge", CV_WINDOW_AUTOSIZE);
+
+
+
+	data1 = (uchar*)edge_img->imageData;
+
+
+
+	for (i = 0; i < height; i++)
+
+		for (j = 0; j < width; j++)
+
+			temp[i][j] = data[i*width + j];
+
+
+
+	double mask1[3][3] = {
+
+		{ -1.0, 0.0, 1.0 },
+
+		{ -1.0, 0.0, 1.0 },
+
+		{ -1.0, 0.0, 1.0 }
+
+	};
+
+
+
+	double mask2[3][3] = {
+
+		{ -1.0, -1.0, -1.0 },
+
+		{ 0.0, 0.0, 0.0 },
+
+		{ 1.0, 1.0, 1.0 }
+
+	};
+
+
+
+	for (x = 1; x < height; x++)
+
+		for (int y = 1; y < width; y++) {
+
+			Gx = 0, Gy = 0;
+
+			for (row = 0;row < 3;row++)
+
+				for (col = 0;col < 3;col++) {
+
+					Gx += temp[x + row - 1][y + col - 1] * mask1[row][col];
+
+					Gy += temp[x + row - 1][y + col - 1] * mask2[row][col];
+
+				}
+
+			Gradient = fabs(Gx) + fabs(Gy);
+
+			if (Gradient > threshold)
+
+				data1[x*width + y] = 255;
+
+			else
+
+				data1[x*width + y] = 0;
+
+		}
+
+
+
+	cvShowImage("origin", src_img);
+
+	cvShowImage("edge", edge_img);
+
+
+
+	cvWaitKey(0);
+
+
+
+	cvReleaseImage(&src_img);
+
+	cvReleaseImage(&edge_img);
+
+}
