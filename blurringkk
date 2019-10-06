@@ -1,0 +1,39 @@
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+int main(){
+    IplImage* src_image=0;
+    IplImage* dst_image=0;
+    int height,width;
+    uchar *data,*data;
+    
+    src_image=cvLoadImage("lena.jpg",0);
+    height=src_image->height;
+    width=src_image->height;
+    data=(uchar*)src_image->imageData;
+    
+    uchar *temp=new uchar[width*height];
+    
+    cvNamedWindow("Original",CV_WINDOW_AUTOSIZE);
+    cvNamedWindow("Filtered",CV_WINDOW_AUTOSIZE);
+    dst_image=cvCreateImage(cvGetSize(src_image),IPL_DEPTH_8U,1);
+    data1=(uchar*)dst_image->imageData;
+   
+   
+    for(int i=0;i<height*width-8;i++){
+        uchar tmp=0;
+        for(int j=i;j<i+9;j++){
+            tmp+=data[j];
+        }
+        tmp/=9;
+        data1[i]=tmp;
+    }
+
+
+
+    cvShowImage("Original",src_image);
+    cvShowImage("Filtered",dst_image);
+    cvWaitKey(0);
+    cvReleaseImage(&src_image);
+    cvReleaseImage(&dst_image);
+
+}
