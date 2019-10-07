@@ -1,0 +1,87 @@
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/core/core_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgcodecs/imgcodecs_c.h>
+using namespace std;
+using namespace cv;
+
+int main() {
+	IplImage* src_image = 0;
+	IplImage* dst_image = 0;
+
+	int height, width;
+	uchar *data, *data1;
+
+	src_image = cvLoadImage("lena.jpg", 0);
+
+	height = src_image->height;
+	width = src_image->width;
+	data = (uchar*)src_image->imageData;
+	uchar** temp = new uchar*[height];
+	for (int i = 0; i < width; ++i)
+		temp[i] = new uchar[width];
+
+
+	cvNamedWindow("Original", 1);
+	cvNamedWindow("Filtered", 1);
+
+	dst_image = cvCreateImage(cvGetSize(src_image), IPL_DEPTH_8U, 1);
+	data1 = (uchar*)dst_image->imageData;
+
+	char choice;
+	cout << "Custom mask Y or N" << endl;
+	cin >> choice;
+	double mask[3][3];
+	if (choice == 'Y' || choice == 'y') {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				cin >> mask[i][j];
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				mask[i][j] = 1.0;
+			}
+		}
+	}
+
+
+
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			temp[i][j] = data[i*width + j];
+		}
+	}
+	double tmp;
+	for (int x = 0; x < height - 1; x++) {
+		for (int y = 0; y = width - 1; y++) {
+			tmp = 0;
+			for (int i = -1; i < 2; i++) {
+				for (int j = -1; j < 2; j++) {
+					if (x + i<0 || y + 1 < 0 || x + i > height || y + j>width)
+						continue;
+					else
+						tmp += temp[x + i][y + j] * mask[i + 1][j + 1];
+				}
+			}
+			data[x + width + y] = tmp;
+
+		}
+	}
+
+
+
+	cvShowImage("Original", src_image);
+	cvShowImage("Filtered", dst_image);
+	cvWaitKey(0);
+	cvReleaseImage(&src_image);
+	cvReleaseImage(&dst_image);
+
+}
